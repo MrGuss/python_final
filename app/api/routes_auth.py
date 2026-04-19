@@ -1,0 +1,3 @@
+"""
+В этом файле описываются эндпоинты Auth Service. Эндпоинты должны быть тонкими: они принимают входные данные, вызывают usecase и возвращают результат. В них не должно быть SQL и не должно быть логики генерации токена напрямую. Здесь должны быть маршруты /auth/register, /auth/login, /auth/me. Для /auth/login используется OAuth2PasswordRequestForm, поэтому вы принимаете form: OAuth2PasswordRequestForm = Depends().
+"""
