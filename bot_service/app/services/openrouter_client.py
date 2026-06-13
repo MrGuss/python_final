@@ -16,7 +16,10 @@ class OpenRouterClient:
             "HTTP-Referer": settings.openrouter_site_url,
             "X-OpenRouter-Title": settings.openrouter_app_name,
         }
-        payload = {"model": settings.openrouter_model, "messages": [message]}
+        payload = {
+            "model": settings.openrouter_model,
+            "messages": [message.model_dump()],
+        }
         response = await self.client.post(
             "/chat/completions", json=payload, headers=headers
         )
