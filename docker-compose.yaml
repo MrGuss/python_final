@@ -1,0 +1,42 @@
+services:
+    bot:
+        image: bot-app:1.0
+        env_file:
+            - bot_service/.env
+        depends_on:
+            - rabbitmq
+            - redis
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+
+    celery_worker:
+        image: bot-app:1.0
+        command: celery -A app.infra.celery_app worker --loglevel=info
+        env_file:
+            - bot_service/.env
+        depends_on:
+            - rabbitmq
+            - redis
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+
+    auth_app:
+        image: auth-app:1.0
+        command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+        ports:
+            - "8000:8000"
+        volumes:
+            - ./auth_service/auth.db:/app/auth.db:rw
+        env_file:
+            - auth_service/.env
+
+    rabbitmq:
+        image: rabbitmq:3.13-management
+        ports:
+            - "5672:5672"
+            - "15672:15672"
+
+    redis:
+        image: redis:7-alpine
+        ports:
+            - "6379:6379"

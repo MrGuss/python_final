@@ -84,16 +84,17 @@ async def handle_text_message(message: Message):
 
     try:
         decode_and_validate(token)
-
-        llm_request.delay(tg_chat_id=chat_id, prompt=message.text)
-
-        await message.answer(
-            "Ваш запрос принят в обработку.\nПожалуйста, подождите, ответ от модели придет отдельным сообщением."
-        )
-
-    except Exception:
+    except Exception as e:
         await redis_client.delete(get_token_key(user_id))
         await message.answer(
             "Токен недействителен или срок его действия истек.\n\nПожалуйста, пройдите авторизацию в Auth Service заново и обновите токен командой `/token`.",
             parse_mode="Markdown",
         )
+        print(e)
+        return
+
+    llm_request.delay(tg_chat_id=chat_id, prompt=message.text)
+
+    await message.answer(
+        "Ваш запрос принят в обработку.\nПожалуйста, подождите, ответ от модели придет отдельным сообщением."
+    )

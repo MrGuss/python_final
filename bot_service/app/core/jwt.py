@@ -11,9 +11,12 @@ def decode_and_validate(token: str) -> JwtPayload:
         return JwtPayload.model_validate(
             jwt.decode(token, settings.jwt_secret, algorithms=[settings.jwt_alg])
         )
-    except ValidationError:
+    except ValidationError as e:
+        print(e)
         raise ValueError("Invalid parameters in decoded token")
-    except jwt.ExpiredSignatureError:
+    except jwt.ExpiredSignatureError as e:
+        print(e)
         raise ValueError("Token expired")
     except Exception as e:
+        print(e)
         raise ValueError(f"Weird error: {e}")
