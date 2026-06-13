@@ -4,7 +4,10 @@ from app.bot.dispatcher import bot, dp
 
 
 async def main():
-    await dp.start_polling(bot)  # pyright: ignore[reportUnknownMemberType]
+    try:
+        await dp.start_polling(bot)
+    finally:
+        await bot.session.close()
 
 
 if __name__ == "__main__":

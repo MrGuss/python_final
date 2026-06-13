@@ -18,8 +18,11 @@ class Settings(BaseSettings):
     openrouter_model: str
     openrouter_site_url: str
     openrouter_app_name: str
+    http_proxy: str | None = None
 
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")  # pyright: ignore[reportUnannotatedClassAttribute]
+    model_config = SettingsConfigDict(  # pyright: ignore[reportUnannotatedClassAttribute]
+        env_file=".env", env_file_encoding="utf-8", extra="allow"
+    )
 
 
 settings = Settings()  # pyright: ignore[reportCallIssue]
