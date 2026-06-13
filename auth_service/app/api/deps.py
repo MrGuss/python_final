@@ -1,15 +1,9 @@
-"""
-В этом файле реализуются зависимости FastAPI. Здесь должна быть зависимость get_db() для выдачи AsyncSession. Здесь же должны быть фабрики get_users_repo() и get_auth_uc(). Здесь же реализуется зависимость get_current_user_id()/get_current_user() которая берёт токен из Authorization: Bearer ..., декодирует токен, проверяет валидность и возвращает user_id или пользователя. При ошибках токена вы бросаете InvalidTokenError/TokenExpiredError.
-"""
-
 from typing import Annotated
-import time
 
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.exceptions import InvalidTokenError, TokenExpiredError
 from app.core.security import decode_token
 from app.db.session import AsyncSessionLocal
 from app.repositories.users import UserRepository
@@ -38,10 +32,5 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 async def get_current_user_id(token: Annotated[str, Depends(oauth2_scheme)]) -> int:
     """Extract and validate the current user id from the bearer token."""
     payload = decode_token(token)
-    user_id = payload.get("sub")
-    expires = payload.get("exp")
-    if user_id is None:
-        raise InvalidTokenError()
-    if expires is None or expires < time.time():
-        raise TokenExpiredError()
+    user_id = payload.sub
     return int(user_id)

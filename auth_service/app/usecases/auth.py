@@ -1,10 +1,10 @@
-"""
-В этом файле описывается бизнес-логика Auth Service. Здесь вы реализуете register(), login(), me(). Здесь вы проверяете, существует ли пользователь, хешируете пароль, проверяете пароль при логине, создаёте JWT, проверяете что пользователь существует для /me. При ошибках вы должны бросать ваши исключения из app/core/exceptions.py (например, UserAlreadyExistsError, InvalidCredentialsError, UserNotFoundError). Здесь не должно быть SQL-запросов напрямую — только вызовы репозитория.
-"""
-
 from datetime import datetime, timezone
 
-from app.core.exceptions import UserAlreadyExistsError, UserNotFoundError, InvalidCredentialsError
+from app.core.exceptions import (
+    InvalidCredentialsError,
+    UserAlreadyExistsError,
+    UserNotFoundError,
+)
 from app.core.security import create_access_token, hash_password, verify_password
 from app.db.models import User
 from app.repositories.users import UserRepository
@@ -14,7 +14,7 @@ from app.schemas.auth import RegisterRequest, TokenResponse
 class AuthService:
     def __init__(self, user_repo: UserRepository):
         """Store the repository used for authentication operations."""
-        self.user_repo = user_repo
+        self.user_repo: UserRepository = user_repo
 
     async def register(self, request: RegisterRequest) -> User:
         """Create a new user after verifying the email is not already taken."""
@@ -28,8 +28,8 @@ class AuthService:
             role="user",
             created_at=datetime.now(timezone.utc),
         )
-        await self.user_repo.create(user)
-        return user
+        user_ret = await self.user_repo.create(user)
+        return user_ret
 
     async def login(self, email: str, password: str) -> TokenResponse:
         """Validate user credentials and issue an access token."""

@@ -1,6 +1,4 @@
-"""
-В этом файле описываются эндпоинты Auth Service. Эндпоинты должны быть тонкими: они принимают входные данные, вызывают usecase и возвращают результат. В них не должно быть SQL и не должно быть логики генерации токена напрямую. Здесь должны быть маршруты /auth/register, /auth/login, /auth/me. Для /auth/login используется OAuth2PasswordRequestForm, поэтому вы принимаете form: OAuth2PasswordRequestForm = Depends().
-"""
+from typing import Annotated
 
 from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
@@ -15,7 +13,10 @@ router = APIRouter()
 
 
 @router.post("/auth/register")
-async def register(register_request: RegisterRequest, auth_service: AuthService = Depends(get_auth_uc)):
+async def register(
+    register_request: RegisterRequest,
+    auth_service: Annotated[AuthService, Depends(get_auth_uc)],
+):
     """Register a new user account."""
     try:
         user = await auth_service.register(register_request)
@@ -26,12 +27,14 @@ async def register(register_request: RegisterRequest, auth_service: AuthService 
 
 @router.post("/auth/login")
 async def login(
-    form_data: OAuth2PasswordRequestForm = Depends(OAuth2PasswordRequestForm),
-    auth_service: AuthService = Depends(get_auth_uc),
+    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+    auth_service: Annotated[AuthService, Depends(get_auth_uc)],
 ) -> TokenResponse:
     """Authenticate a user and return an access token."""
     try:
-        token_response = await auth_service.login(form_data.username, form_data.password)
+        token_response = await auth_service.login(
+            form_data.username, form_data.password
+        )
         return token_response
     except Exception as e:
         raise InternalServerError(detail=str(e))
@@ -39,7 +42,8 @@ async def login(
 
 @router.get("/auth/me")
 async def get_current_user(
-    user_id: int = Depends(get_current_user_id), auth_service: AuthService = Depends(get_auth_uc)
+    user_id: Annotated[int, Depends(get_current_user_id)],
+    auth_service: Annotated[AuthService, Depends(get_auth_uc)],
 ):
     """Return the authenticated user's public profile."""
     try:
