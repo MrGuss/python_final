@@ -21,7 +21,13 @@ dependencies = [
 ]
 
 [tool.uv]
-dev-dependencies = [
+package = true
+
+[project.scripts]
+bot = "app.main:main"
+
+[dependency-groups]
+dev = [
     "ruff>=0.15.17",
 ]
 
