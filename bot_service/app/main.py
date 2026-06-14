@@ -5,7 +5,7 @@ from app.bot.dispatcher import bot, dp
 
 async def main():
     try:
-        await dp.start_polling(bot)
+        await dp.start_polling(bot)  # pyright: ignore[reportUnknownMemberType]
     finally:
         await bot.session.close()
 

@@ -44,7 +44,7 @@ async def cmd_set_token(message: Message):
             )
             return
 
-        await redis_client.setex(get_token_key(user_id), ttl, token)
+        await redis_client.set(name=get_token_key(user_id), value=token, ex=ttl)
 
         await message.answer(
             "Токен успешно сохранен!\nТеперь вы можете отправлять текстовые сообщения, и они будут обработаны LLM."

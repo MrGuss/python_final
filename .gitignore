@@ -11,3 +11,4 @@ wheels/
 .python-version
 .env
 token
+auth.db

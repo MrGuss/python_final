@@ -30,3 +30,4 @@ dev-dependencies = [
 [tool.pyright]
 venvPath = "."
 venv = ".venv"
+reportUnusedCallResult = false
