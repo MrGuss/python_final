@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 
 from app.api.deps import get_auth_uc, get_current_user_id
@@ -21,6 +21,8 @@ async def register(
     try:
         user = await auth_service.register(register_request)
         return UserPublic.model_validate(user)
+    except HTTPException:
+        raise
     except Exception as e:
         raise InternalServerError(detail=str(e))
 
@@ -36,6 +38,8 @@ async def login(
             form_data.username, form_data.password
         )
         return token_response
+    except HTTPException:
+        raise
     except Exception as e:
         raise InternalServerError(detail=str(e))
 
@@ -49,5 +53,7 @@ async def get_current_user(
     try:
         user = await auth_service.me(user_id)
         return UserPublic.model_validate(user)
+    except HTTPException:
+        raise
     except Exception as e:
         raise InternalServerError(detail=str(e))
